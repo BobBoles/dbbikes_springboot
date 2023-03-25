@@ -4,8 +4,6 @@ import ie.umbrella.db.bikes.entity.BikeStation;
 import ie.umbrella.db.bikes.entity.DBStation;
 import ie.umbrella.db.bikes.entity.MapMarker;
 import ie.umbrella.db.bikes.exception.ServiceLayerException;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 /**
@@ -20,4 +18,5 @@ public interface DBAPIService {
     public List<MapMarker> getStationLocations() throws ServiceLayerException;
     public List<DBStation> getStations() throws ServiceLayerException;
     public List<BikeStation> getContracts() throws ServiceLayerException;
+    public List<MapMarker> getStationMarkerById(Long id) throws ServiceLayerException;
 }

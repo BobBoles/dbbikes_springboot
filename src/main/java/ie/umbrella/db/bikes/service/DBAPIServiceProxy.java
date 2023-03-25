@@ -16,7 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -43,8 +43,8 @@ public class DBAPIServiceProxy implements DBAPIService {
     public List<MapMarker> getStationLocations() {
         List<MapMarker> mapMarkers = null;
         try{
-            String url = "https://api.jcdecaux.com/vls/v1/stations";
-            RecordedResponse recordedResponse = recordedResponseRepository.findByUrl(url);
+            String identifier = "locations";
+            RecordedResponse recordedResponse = recordedResponseRepository.findByIdentifier(identifier);
             String jsonData = recordedResponse.getJsonData();
             ObjectMapper objectMapper = new ObjectMapper();
             mapMarkers = objectMapper.readValue(recordedResponse.getJsonData(), new TypeReference<List<MapMarker>>(){});
@@ -62,8 +62,8 @@ public class DBAPIServiceProxy implements DBAPIService {
     public List<DBStation> getStations() {
         List<DBStation> stations = null;
         try{
-            String url = "https://api.jcdecaux.com/vls/v1/stations";
-            RecordedResponse recordedResponse = recordedResponseRepository.findByUrl(url);
+            String identifier = "stations";
+            RecordedResponse recordedResponse = recordedResponseRepository.findByIdentifier(identifier);
             String jsonData = recordedResponse.getJsonData();
             ObjectMapper objectMapper = new ObjectMapper();
             stations = objectMapper.readValue(jsonData, new TypeReference<List<DBStation>>(){});
@@ -81,8 +81,8 @@ public class DBAPIServiceProxy implements DBAPIService {
     public List<BikeStation> getContracts() {
         List<BikeStation> contracts = null;
         try{
-            String url = "https://api.jcdecaux.com/vls/v1/contracts";
-            RecordedResponse recordedResponse = recordedResponseRepository.findByUrl(url);
+            String identifier = "contracts";
+            RecordedResponse recordedResponse = recordedResponseRepository.findByIdentifier(identifier);
             String jsonData = recordedResponse.getJsonData();
             ObjectMapper objectMapper = new ObjectMapper();
             contracts = objectMapper.readValue(jsonData, new TypeReference<List<BikeStation>>(){});
@@ -94,6 +94,36 @@ public class DBAPIServiceProxy implements DBAPIService {
         }
         logger.info("Contracts retrieved:" + contracts.size());
         return contracts;
+    }
+
+    @Override
+    public List<MapMarker> getStationMarkerById(Long id) throws ServiceLayerException {
+        logger.info("DBAPIServiceImpl: Retrieving mapMarker for station" + id);
+        List<MapMarker> mapMarkers = null;
+        try{
+            String identifier = "stations";
+            RecordedResponse recordedResponse = recordedResponseRepository.findByIdentifier(identifier);
+            String jsonData = recordedResponse.getJsonData();
+            ObjectMapper objectMapper = new ObjectMapper();
+            mapMarkers = objectMapper.readValue(jsonData, new TypeReference<List<MapMarker>>(){});
+            for (MapMarker marker: mapMarkers) {
+                if(marker.getNumber() == id){
+                    mapMarkers = new ArrayList<MapMarker>();
+                    mapMarkers.add(marker);
+                }
+            }
+        }
+        catch(JsonProcessingException e)
+        {
+            logger.error("JsonProcessingException retrieving locations: ", e.getMessage());
+            throw new ServiceLayerException("Exception retrieving locations", e);
+        }
+        catch(Exception e)
+        {
+            logger.error("Exception retrieving contracts: ", e.getMessage());
+            throw new ServiceLayerException("Exception retrieving locations", e);
+        }
+        return mapMarkers;
     }
 
     @ExceptionHandler(ServiceLayerException.class)

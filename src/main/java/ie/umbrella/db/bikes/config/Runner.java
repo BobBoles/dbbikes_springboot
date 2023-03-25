@@ -15,7 +15,7 @@ import java.nio.charset.StandardCharsets;
 
 
 /**
- * Used to initialisein-memory H2 database with JSON data from files.
+ * Used to initialise in-memory H2 database with JSON data from files.
  *
  * The file data was retrieved using the api in an earlier session.
  * The aim is to allow the application to be run using 'recorded' data.
@@ -30,34 +30,28 @@ public class Runner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        String url = "https://api.jcdecaux.com/vls/v1/stations";
-        saveRecordedResponse(url, "stations");
+        String identifier = "stations";
+        saveRecordedResponse(identifier, "stations");
 
-        url = "https://api.jcdecaux.com/vls/v1/contracts";
-        saveRecordedResponse(url, "contracts");
+        identifier = "contracts";
+        saveRecordedResponse(identifier, "contracts");
 
-        /*
-        The JSON data used to display location info on the map
-        is the same JSON data used to display a table containing station information
-        Ignored here to avoid duplicates in the database
+        identifier = "locations";
+        saveRecordedResponse(identifier, "locations");
 
-        url = "https://api.jcdecaux.com/vls/v1/stations";
-        content = readJsonFromFile("locations");
-        saveRecordedResponse(url, content);
-        */
     }
 
     /**
      * Stores the data using repository pattern
      *
-     * @param url used later as key to retrieve JSON from database
+     * @param identifier this has unique contraint and is used to retrieve JSON from database
      * @param fileName the flat file containing jsonData
      */
 
-    private void saveRecordedResponse(String url, String fileName){
+    private void saveRecordedResponse(String identifier, String fileName){
         String jsonContentFromFile = readJsonFromFile(fileName);
         RecordedResponse recordedResponse = new RecordedResponse();
-        recordedResponse.setUrl(url);
+        recordedResponse.setIdentifier(identifier);
         recordedResponse.setJsonData(jsonContentFromFile);
         recordedResponseRepository.save(recordedResponse);
     }

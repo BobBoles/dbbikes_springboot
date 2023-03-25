@@ -22,7 +22,9 @@ public class RecordedResponse {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String url;
+
+    @Column(unique=true)
+    private String identifier;
 
     @Lob
     @Column

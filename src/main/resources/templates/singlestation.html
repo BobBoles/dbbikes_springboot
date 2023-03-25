@@ -17,7 +17,9 @@
 
           <section class="py-5 container">
             <div class="row">
-              <h1>Dublin Bikes Map</h1>
+              <h1>Dublin Bikes Map
+                <div th:text="${markers[0].address}"></div>
+              </h1>
             </div>
             <div class="row py-lg-5">
               <style>

@@ -13,6 +13,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MapMarker {
+
+    private Long number;
     private String address;
     private Position position;
 
@@ -38,5 +40,13 @@ public class MapMarker {
 
     public void setPosition(Position position) {
         this.position = position;
+    }
+
+    public Long getNumber() {
+        return number;
+    }
+
+    public void setNumber(Long number) {
+        this.number = number;
     }
 }

@@ -15,7 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.RestTemplate;
-
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -88,6 +88,36 @@ public class DBAPIServiceImpl implements DBAPIService {
         logger.info("Number of stations retrieved:" + stations.size());
         return stations;
     }
+
+    @Override
+    public List<MapMarker> getStationMarkerById(Long id) throws ServiceLayerException {
+        List<MapMarker> mapMarkers = null;
+        try{
+            RestTemplate restTemplate = new RestTemplate();
+            String apiUrl = "https://api.jcdecaux.com/vls/v1/stations?apiKey=" + apiKey + "&contract=dublin";
+            String jsonResponse = restTemplate.getForObject(apiUrl, String.class);
+            ObjectMapper objectMapper = new ObjectMapper();
+            mapMarkers = objectMapper.readValue(jsonResponse, new TypeReference<List<MapMarker>>(){});
+            for (MapMarker marker: mapMarkers) {
+                if(marker.getNumber() == id){
+                    mapMarkers = new ArrayList<MapMarker>();
+                    mapMarkers.add(marker);
+                }
+            }
+        }
+        catch(JsonProcessingException e)
+        {
+            logger.error("JsonProcessingException retrieving locations: ", e.getMessage());
+            throw new ServiceLayerException("Exception retrieving locations", e);
+        }
+        catch(Exception e)
+        {
+            logger.error("Exception retrieving contracts: ", e.getMessage());
+            throw new ServiceLayerException("Exception retrieving locations", e);
+        }
+        return mapMarkers;
+    }
+
 
     public List<MapMarker> getStationLocations() throws ServiceLayerException{
         logger.info("Retrieving stations marker info from the JCDecaux API");

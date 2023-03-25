@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface RecordedResponseRepository extends JpaRepository<RecordedResponse, Long> {
-    public RecordedResponse findByUrl(String url);
+    public RecordedResponse findByIdentifier(String identifier);
 }
